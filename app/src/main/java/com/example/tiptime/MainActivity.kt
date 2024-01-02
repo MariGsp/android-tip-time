@@ -86,7 +86,10 @@ fun TipTimeLayout() {
 
 @Composable
 fun EditNumberField(modifier: Modifier = Modifier) {
-    TextField(value = "", onValueChange = {}, modifier = modifier)
+    val amountInput = "0"
+    TextField(value = amountInput,
+        onValueChange = {},
+        modifier = modifier)
 }
 
 /**
