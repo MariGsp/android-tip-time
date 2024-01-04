@@ -20,6 +20,7 @@ import android.widget.NumberPicker.OnValueChangeListener
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -71,8 +72,10 @@ class MainActivity : ComponentActivity() {
 fun TipTimeLayout() {
 
     var amountInput by remember { mutableStateOf("") }
+    var tipInput by remember { mutableStateOf("") }
+    val tipPercent = tipInput.toDoubleOrNull() ?: 0.0
     var amount = amountInput.toDoubleOrNull() ?: 0.0
-    var tip = calculateTip(amount)
+    var tip = calculateTip(amount, tipPercent)
 
     Column(
         modifier = Modifier
@@ -89,12 +92,20 @@ fun TipTimeLayout() {
                 .align(alignment = Alignment.Start)
         )
         EditNumberField(
+            label = R.string.bill_amount,
             value = amountInput,
             onValueChange = { amountInput = it },
             modifier = Modifier
                 .padding(bottom = 32.dp)
                 .fillMaxWidth()
         )
+        EditNumberField(
+            label = R.string.how_was_the_service,
+            value = tipInput,
+            onValueChange = { tipInput = it },
+            modifier = Modifier.padding(bottom = 32.dp).fillMaxWidth()
+        )
+
         Text(
             text = stringResource(R.string.tip_amount, tip),
             style = MaterialTheme.typography.displaySmall
@@ -106,6 +117,7 @@ fun TipTimeLayout() {
 
 @Composable
 fun EditNumberField(
+    @StringRes label: Int,
     value: String,
     onValueChange: (String) -> Unit,
     modifier: Modifier = Modifier
@@ -113,7 +125,7 @@ fun EditNumberField(
     TextField(
         value = value,
         onValueChange = onValueChange,
-        label = { Text(stringResource(R.string.bill_amount)) },
+        label = { Text(stringResource(label)) },
         singleLine = true,
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
         modifier = modifier
@@ -125,7 +137,7 @@ fun EditNumberField(
  * according to the local currency.
  * Example would be "$10.00".
  */
-private fun calculateTip(amount: Double, tipPercent: Double = 15.0): String {
+private fun calculateTip(amount: Double, tipPercent: Double): String {
     val tip = tipPercent / 100 * amount
     return NumberFormat.getCurrencyInstance().format(tip)
 }
